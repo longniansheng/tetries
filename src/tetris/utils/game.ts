@@ -42,7 +42,7 @@ export function handleKeyLeft(state: IState, action: IAction) {
     for (let j = 0; j < cur[0].length; j++) {
       if (
         cur[i][j] &&
-        (curLeft + j === 0 || gameData[curTop + i - 1][curLeft + j - 1])
+        (curLeft + j === 0 || gameData[curTop + i][curLeft + j - 1])
       ) {
         canMoveLeft = false;
         break;
@@ -71,7 +71,7 @@ export function handleKeyRight(state: IState, action: IAction) {
       if (
         cur[i][j] &&
         (curLeft + j + 1 === gameData[0].length ||
-          gameData[curTop + i + 1][curLeft + j])
+          gameData[curTop + i][curLeft + j + 1])
       ) {
         canMoveRight = false;
         break;
@@ -168,9 +168,7 @@ export function genGameData(
   const filterLine = result.length - filteredData.length;
   if (filterLine !== 0) {
     for (let i = 0; i < filterLine; i++) {
-      filteredData.unshift(
-        Array.from({ length: squares[0].length }).map(item => 0)
-      );
+      filteredData.unshift(Array.from({ length: 10 }).map(item => 0));
     }
   }
   const newScore = calcScore(score, filterLine);
