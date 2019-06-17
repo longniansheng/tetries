@@ -18,7 +18,11 @@ export function handleKeyDown(state: IState, action: IAction) {
 }
 
 export function handleKeyLeft(state: IState, action: IAction) {
-  const { gameData, current, curLeft, curTop } = state;
+  const { gameData, current, curLeft, curTop, gameOver } = state;
+  // 如果已经gameOver不再进行其他的操作
+  if (gameOver) {
+    return { ...state }
+  }
   const cur = squares[current[0]][current[1]];
   let canMoveLeft = true;
   for (let i = 0; i < cur.length; i++) {
@@ -39,7 +43,11 @@ export function handleKeyLeft(state: IState, action: IAction) {
 }
 
 export function handleKeyRight(state: IState, action: IAction) {
-  const { gameData, current, curLeft, curTop } = state;
+  const { gameData, current, curLeft, curTop, gameOver } = state;
+  // 如果已经gameOver不再进行其他的操作
+  if (gameOver) {
+    return { ...state }
+  }
   const cur = squares[current[0]][current[1]];
   let canMoveRight = true;
   for (let i = 0; i < cur.length; i++) {
@@ -60,10 +68,14 @@ export function handleKeyRight(state: IState, action: IAction) {
 }
 
 export function handleAutoDown(state: IState, action: IAction) {
-  const { current, gameData, curTop, curLeft, next } = state;
+  const { current, gameData, curTop, curLeft, next, score, gameOver } = state;
+
+  // 如果已经gameOver不再进行其他的操作
+  if (gameOver) {
+    return { ...state }
+  }
 
   let isEnd = false;
-  let gameOver = false;
   let pos: [number, number] = [0, 0];
   const cur = squares[current[0]][current[1]];
 
@@ -78,14 +90,13 @@ export function handleAutoDown(state: IState, action: IAction) {
         ((i + 1) * 20 + curTop * 20 >= 400 || gameData[curTop + i + 1][curLeft + j])
       ) {
         isEnd = true;
-        if (curTop === 0) {
-          gameOver = true;
-        }
         pos = [curTop, curLeft];
         break;
       }
     }
   }
+
+  const { gameData: newGameData, score: newScore } = genGameData(isEnd, cur, gameData, pos, score);
 
   return {
     ...state,
@@ -93,7 +104,8 @@ export function handleAutoDown(state: IState, action: IAction) {
     next: isEnd ? getRandomSquares() : next,
     curTop: isEnd ? DEFAULT_CUR_TOP : curTop + 1,
     curLeft: isEnd ? DEFAULT_CUR_LEFT : curLeft,
-    gameData: isEnd ? genGameData(cur, gameData, pos) : gameData,
+    gameData: newGameData,
+    score: newScore,
     gameOver
   };
 }
@@ -107,10 +119,17 @@ export function getRandomSquares(): [number, number] {
 }
 
 export function genGameData(
+  isEnd: boolean,
   current: number[][],
   gameData: number[][],
-  pos: [number, number]
+  pos: [number, number],
+  score: number
 ) {
+
+  if (!isEnd) {
+    return { gameData, score }
+  }
+
   const result = [...gameData];
   for (let i = 0; i < current.length; i++) {
     for (let j = 0; j < current[0].length; j++) {
@@ -119,5 +138,28 @@ export function genGameData(
       }
     }
   }
-  return result;
+
+  const filteredData = result.filter(item => !item.every(_ => _));
+  const filterLine = result.length - filteredData.length;
+  if (filterLine !== 0) {
+    for (let i = 0; i < filterLine; i++) {
+      filteredData.unshift(Array.from({ length: squares[0].length }).map(item => 0));
+    }
+  }
+  const newScore = calcScore(score, filterLine);
+  return { gameData: filteredData, score: newScore };
+}
+
+export function calcScore(score: number, filterLine: number) {
+  if (filterLine === 1) {
+    return score + 10;
+  } else if (filterLine === 2) {
+    return score + 30;
+  } else if (filterLine === 3) {
+    return score + 60;
+  } else if (filterLine === 4) {
+    return score + 100;
+  } else {
+    return score
+  }
 }
