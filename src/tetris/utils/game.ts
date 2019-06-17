@@ -18,14 +18,44 @@ export function handleKeyDown(state: IState, action: IAction) {
 }
 
 export function handleKeyLeft(state: IState, action: IAction) {
+  const { gameData, current, curLeft, curTop } = state;
+  const cur = squares[current[0]][current[1]];
+  let canMoveLeft = true;
+  for (let i = 0; i < cur.length; i++) {
+    if (!canMoveLeft) {
+      break;
+    }
+    for (let j = 0; j < cur[0].length; j++) {
+      if (cur[i][j] && (curLeft + j === 0 || gameData[curTop + i - 1][curLeft + j - 1])) {
+        canMoveLeft = false;
+        break;
+      }
+    }
+  }
   return {
-    ...state
+    ...state,
+    curLeft: canMoveLeft ? curLeft - 1 : curLeft
   };
 }
 
 export function handleKeyRight(state: IState, action: IAction) {
+  const { gameData, current, curLeft, curTop } = state;
+  const cur = squares[current[0]][current[1]];
+  let canMoveRight = true;
+  for (let i = 0; i < cur.length; i++) {
+    if (!canMoveRight) {
+      break;
+    }
+    for (let j = 0; j < cur[0].length; j++) {
+      if (cur[i][j] && (curLeft + j + 1 === gameData[0].length || gameData[curTop + i + 1][curLeft + j])) {
+        canMoveRight = false;
+        break;
+      }
+    }
+  }
   return {
-    ...state
+    ...state,
+    curLeft: canMoveRight ? curLeft + 1 : curLeft
   };
 }
 
@@ -35,15 +65,16 @@ export function handleAutoDown(state: IState, action: IAction) {
   let isEnd = false;
   let gameOver = false;
   let pos: [number, number] = [0, 0];
+  const cur = squares[current[0]][current[1]];
 
-  for (let i = current.length - 1; i >= 0; i--) {
+  for (let i = cur.length - 1; i >= 0; i--) {
     if (isEnd) {
       break;
     }
-    for (let j = 0; j < current[0].length; j++) {
+    for (let j = 0; j < cur[0].length; j++) {
       // 如果落到最下方或者碰到了障碍物，停止继续下沉，生成新的方块
       if (
-        current[i][j] &&
+        cur[i][j] &&
         ((i + 1) * 20 + curTop * 20 >= 400 || gameData[curTop + i + 1][curLeft + j])
       ) {
         isEnd = true;
@@ -62,14 +93,17 @@ export function handleAutoDown(state: IState, action: IAction) {
     next: isEnd ? getRandomSquares() : next,
     curTop: isEnd ? DEFAULT_CUR_TOP : curTop + 1,
     curLeft: isEnd ? DEFAULT_CUR_LEFT : curLeft,
-    gameData: isEnd ? genGameData(current, gameData, pos) : gameData,
+    gameData: isEnd ? genGameData(cur, gameData, pos) : gameData,
     gameOver
   };
 }
 
-export function getRandomSquares() {
-  const temp = squares[Math.floor(Math.random() * squares.length)];
-  return temp[Math.floor(Math.random() * temp.length)];
+export function getRandomSquares(): [number, number] {
+  const sIdx = Math.floor(Math.random() * squares.length)
+  const temp = squares[sIdx];
+  const cIdx = Math.floor(Math.random() * temp.length);
+
+  return [sIdx, cIdx]
 }
 
 export function genGameData(
