@@ -16,6 +16,7 @@ function useCanvasHooks(): [
     current: number[][];
     curTop: number;
     curLeft: number;
+    gameOver: boolean
   },
   React.Dispatch<IAction>
 ] {
@@ -25,7 +26,8 @@ function useCanvasHooks(): [
     score: DEFAULT_SCORE,
     current: getRandomSquares(),
     curLeft: DEFAULT_CUR_LEFT,
-    curTop: DEFAULT_CUR_TOP
+    curTop: DEFAULT_CUR_TOP,
+    gameOver: false
   });
 
   useEffect(() => {
@@ -41,6 +43,7 @@ function useCanvasHooks(): [
         case 39:
           dispatch({ type: "HANDLE_KEYRIGHT" });
           break;
+        case 32:
         case 40:
           dispatch({ type: "HANDLE_KEYDOWN" });
           break;

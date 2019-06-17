@@ -20,6 +20,7 @@ export interface IState {
   score: number;
   curTop: number;
   curLeft: number;
+  gameOver: boolean;
 }
 
 export interface IAction {
@@ -36,7 +37,8 @@ function reducer(state: IState, action: IAction) {
         score: DEFAULT_SCORE,
         current: getRandomSquares(),
         curLeft: DEFAULT_CUR_LEFT,
-        curTop: DEFAULT_CUR_TOP
+        curTop: DEFAULT_CUR_TOP,
+        gameOver: false
       };
     case "HANDLE_KEYUP":
       return handleKeyUp(state, action);
