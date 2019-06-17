@@ -8,8 +8,18 @@ import {
 } from "./contants";
 
 export function handleKeyUp(state: IState, action: IAction) {
+  const { gameData, current, curLeft, curTop, gameOver } = state;
+  if (gameOver) {
+    return { ...state };
+  }
+  const [sIdx, cIdx] = current;
+  const sData = squares[sIdx];
+  const newCIdx = (cIdx + 1) % sData.length;
+  const newCurrent = [sIdx, newCIdx] as [number, number];
+  const canroate = canRoate(curLeft, curTop, gameData, newCurrent);
   return {
-    ...state
+    ...state,
+    current: canroate ? newCurrent : current
   };
 }
 
@@ -179,4 +189,27 @@ export function calcScore(score: number, filterLine: number) {
   } else {
     return score;
   }
+}
+
+function canRoate(
+  curLeft: number,
+  curTop: number,
+  gameData: number[][],
+  current: [number, number]
+): boolean {
+  let flag = true;
+
+  const newCurrent = squares[current[0]][current[1]];
+  for (let i = 0; i < newCurrent.length; i++) {
+    if (!flag) {
+      break;
+    }
+    for (let j = 0; j < newCurrent[0].length; j++) {
+      if (newCurrent[i][j] && gameData[curTop + i][curLeft + j]) {
+        flag = false;
+        break;
+      }
+    }
+  }
+  return flag;
 }
