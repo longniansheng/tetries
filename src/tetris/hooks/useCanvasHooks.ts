@@ -11,9 +11,9 @@ import reducer, { IAction } from "./reducer";
 function useCanvasHooks(): [
   {
     gameData: number[][];
-    next: number[][];
+    next: [number, number];
     score: number;
-    current: number[][];
+    current: [number, number];
     curTop: number;
     curLeft: number;
     gameOver: boolean

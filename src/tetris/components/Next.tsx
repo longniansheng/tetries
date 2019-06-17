@@ -1,5 +1,6 @@
 import React, { CSSProperties, useRef, useEffect } from "react";
 import draw from "../utils/draw";
+import { squares } from '../utils/contants';
 
 const style: CSSProperties = {
   width: "80px",
@@ -17,7 +18,7 @@ const canvasStyle = {
   width: "100%"
 };
 
-export default function Next({ next }: { next: number[][] }) {
+export default function Next({ next }: { next: [number, number] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (canvasRef.current) {
@@ -28,7 +29,8 @@ export default function Next({ next }: { next: number[][] }) {
 
   useEffect(() => {
     if (canvasRef.current) {
-      draw(canvasRef.current, next);
+      const n = squares[next[0]][next[1]];
+      draw(canvasRef.current, n);
     }
   }, [next]);
 

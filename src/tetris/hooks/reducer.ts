@@ -15,8 +15,8 @@ import {
 
 export interface IState {
   gameData: number[][];
-  next: number[][];
-  current: number[][];
+  next: [number, number];
+  current: [number, number];
   score: number;
   curTop: number;
   curLeft: number;

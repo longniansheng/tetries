@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import draw, { drawCurrent } from "../utils/draw";
 import { IAction } from "../hooks/reducer";
+import { squares } from '../utils/contants';
 // import useInterval from "../hooks/useInterval";
 
 const style = {
@@ -12,7 +13,7 @@ const style = {
 
 interface IProps {
   gameData: number[][];
-  current: number[][];
+  current: [number, number];
   curLeft: number;
   curTop: number;
   dispatch: React.Dispatch<IAction>;
@@ -37,7 +38,8 @@ export default function Game({
   useEffect(() => {
     if (canvasRef.current) {
       draw(canvasRef.current, gameData);
-      drawCurrent(canvasRef.current, current, curTop, curLeft);
+      const cur = squares[current[0]][current[1]]
+      drawCurrent(canvasRef.current, cur, curTop, curLeft);
     }
   }, [gameData, current, curTop, curLeft]);
 
