@@ -33,16 +33,23 @@ export function handleAutoDown(state: IState, action: IAction) {
   const { current, gameData, curTop, curLeft, next } = state;
 
   let isEnd = false;
+  let gameOver = false;
   let pos: [number, number] = [0, 0];
 
   for (let i = current.length - 1; i >= 0; i--) {
+    if (isEnd) {
+      break;
+    }
     for (let j = 0; j < current[0].length; j++) {
       // 如果落到最下方或者碰到了障碍物，停止继续下沉，生成新的方块
       if (
         current[i][j] &&
-        ((i + 1) * 20 + curTop * 20 >= 400 || gameData[curTop + i + 1][curLeft])
+        ((i + 1) * 20 + curTop * 20 >= 400 || gameData[curTop + i + 1][curLeft + j])
       ) {
         isEnd = true;
+        if (curTop === 0) {
+          gameOver = true;
+        }
         pos = [curTop, curLeft];
         break;
       }
@@ -55,7 +62,8 @@ export function handleAutoDown(state: IState, action: IAction) {
     next: isEnd ? getRandomSquares() : next,
     curTop: isEnd ? DEFAULT_CUR_TOP : curTop + 1,
     curLeft: isEnd ? DEFAULT_CUR_LEFT : curLeft,
-    gameData: isEnd ? genGameData(current, gameData, pos) : gameData
+    gameData: isEnd ? genGameData(current, gameData, pos) : gameData,
+    gameOver
   };
 }
 
