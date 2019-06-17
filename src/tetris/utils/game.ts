@@ -21,7 +21,7 @@ export function handleKeyLeft(state: IState, action: IAction) {
   const { gameData, current, curLeft, curTop, gameOver } = state;
   // 如果已经gameOver不再进行其他的操作
   if (gameOver) {
-    return { ...state }
+    return { ...state };
   }
   const cur = squares[current[0]][current[1]];
   let canMoveLeft = true;
@@ -30,7 +30,10 @@ export function handleKeyLeft(state: IState, action: IAction) {
       break;
     }
     for (let j = 0; j < cur[0].length; j++) {
-      if (cur[i][j] && (curLeft + j === 0 || gameData[curTop + i - 1][curLeft + j - 1])) {
+      if (
+        cur[i][j] &&
+        (curLeft + j === 0 || gameData[curTop + i - 1][curLeft + j - 1])
+      ) {
         canMoveLeft = false;
         break;
       }
@@ -46,7 +49,7 @@ export function handleKeyRight(state: IState, action: IAction) {
   const { gameData, current, curLeft, curTop, gameOver } = state;
   // 如果已经gameOver不再进行其他的操作
   if (gameOver) {
-    return { ...state }
+    return { ...state };
   }
   const cur = squares[current[0]][current[1]];
   let canMoveRight = true;
@@ -55,7 +58,11 @@ export function handleKeyRight(state: IState, action: IAction) {
       break;
     }
     for (let j = 0; j < cur[0].length; j++) {
-      if (cur[i][j] && (curLeft + j + 1 === gameData[0].length || gameData[curTop + i + 1][curLeft + j])) {
+      if (
+        cur[i][j] &&
+        (curLeft + j + 1 === gameData[0].length ||
+          gameData[curTop + i + 1][curLeft + j])
+      ) {
         canMoveRight = false;
         break;
       }
@@ -72,10 +79,11 @@ export function handleAutoDown(state: IState, action: IAction) {
 
   // 如果已经gameOver不再进行其他的操作
   if (gameOver) {
-    return { ...state }
+    return { ...state };
   }
 
   let isEnd = false;
+  let newGameOver = false;
   let pos: [number, number] = [0, 0];
   const cur = squares[current[0]][current[1]];
 
@@ -87,35 +95,43 @@ export function handleAutoDown(state: IState, action: IAction) {
       // 如果落到最下方或者碰到了障碍物，停止继续下沉，生成新的方块
       if (
         cur[i][j] &&
-        ((i + 1) * 20 + curTop * 20 >= 400 || gameData[curTop + i + 1][curLeft + j])
+        ((i + 1) * 20 + curTop * 20 >= 400 ||
+          gameData[curTop + i + 1][curLeft + j])
       ) {
         isEnd = true;
+        newGameOver = curTop === 0;
         pos = [curTop, curLeft];
         break;
       }
     }
   }
 
-  const { gameData: newGameData, score: newScore } = genGameData(isEnd, cur, gameData, pos, score);
+  const { gameData: newGameData, score: newScore } = genGameData(
+    isEnd || newGameOver,
+    cur,
+    gameData,
+    pos,
+    score
+  );
 
   return {
     ...state,
-    current: isEnd ? next : current,
-    next: isEnd ? getRandomSquares() : next,
+    current: newGameOver ? current : isEnd ? next : current,
+    next: newGameOver ? next : isEnd ? getRandomSquares() : next,
     curTop: isEnd ? DEFAULT_CUR_TOP : curTop + 1,
     curLeft: isEnd ? DEFAULT_CUR_LEFT : curLeft,
     gameData: newGameData,
     score: newScore,
-    gameOver
+    gameOver: newGameOver
   };
 }
 
 export function getRandomSquares(): [number, number] {
-  const sIdx = Math.floor(Math.random() * squares.length)
+  const sIdx = Math.floor(Math.random() * squares.length);
   const temp = squares[sIdx];
   const cIdx = Math.floor(Math.random() * temp.length);
 
-  return [sIdx, cIdx]
+  return [sIdx, cIdx];
 }
 
 export function genGameData(
@@ -125,9 +141,8 @@ export function genGameData(
   pos: [number, number],
   score: number
 ) {
-
   if (!isEnd) {
-    return { gameData, score }
+    return { gameData, score };
   }
 
   const result = [...gameData];
@@ -143,7 +158,9 @@ export function genGameData(
   const filterLine = result.length - filteredData.length;
   if (filterLine !== 0) {
     for (let i = 0; i < filterLine; i++) {
-      filteredData.unshift(Array.from({ length: squares[0].length }).map(item => 0));
+      filteredData.unshift(
+        Array.from({ length: squares[0].length }).map(item => 0)
+      );
     }
   }
   const newScore = calcScore(score, filterLine);
@@ -160,6 +177,6 @@ export function calcScore(score: number, filterLine: number) {
   } else if (filterLine === 4) {
     return score + 100;
   } else {
-    return score
+    return score;
   }
 }
