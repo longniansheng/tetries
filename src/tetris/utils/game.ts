@@ -1,10 +1,28 @@
 import { IState, IAction } from "../hooks/reducer";
 import {
+  // DEFAULT_GAME_DATA,
+  DEFAULT_SCORE,
   DEFAULT_CUR_LEFT,
   DEFAULT_CUR_TOP,
   squares
 } from "./contants";
 
+export function handleReRender(state: IState, action: IAction) {
+  // 直接使用DEFAULT_GAME_DATA会出现gameData无法更新的bug
+  const gameData = Array.from({ length: 20 }).map(() => {
+    const arr = Array.from({ length: 10 }).map(() => 0);
+    return [...arr];
+  });
+  return {
+    gameData,
+    next: getRandomSquares(),
+    score: DEFAULT_SCORE,
+    current: getRandomSquares(),
+    curLeft: DEFAULT_CUR_LEFT,
+    curTop: DEFAULT_CUR_TOP,
+    gameOver: false
+  };
+}
 export function handleKeyUp(state: IState, action: IAction) {
   const { gameData, current, curLeft, curTop, gameOver } = state;
   if (gameOver) {
@@ -40,7 +58,8 @@ export function handleKeyLeft(state: IState, action: IAction) {
     for (let j = 0; j < cur[0].length; j++) {
       if (
         cur[i][j] &&
-        (curLeft + j === 0 || curTop + i > 0 && gameData[curTop + i][curLeft + j - 1])
+        (curLeft + j === 0 ||
+          (curTop + i > 0 && gameData[curTop + i][curLeft + j - 1]))
       ) {
         canMoveLeft = false;
         break;
@@ -69,7 +88,7 @@ export function handleKeyRight(state: IState, action: IAction) {
       if (
         cur[i][j] &&
         (curLeft + j + 1 === gameData[0].length ||
-          curTop + i > 0 && gameData[curTop + i][curLeft + j + 1])
+          (curTop + i > 0 && gameData[curTop + i][curLeft + j + 1]))
       ) {
         canMoveRight = false;
         break;
@@ -104,10 +123,10 @@ export function handleAutoDown(state: IState, action: IAction) {
       if (
         cur[i][j] &&
         ((i + 1) * 20 + curTop * 20 >= 400 ||
-          curTop + i + 1 >= 0 && gameData[curTop + i + 1][curLeft + j])
+          (curTop + i + 1 >= 0 && gameData[curTop + i + 1][curLeft + j]))
       ) {
         isEnd = true;
-        newGameOver = curTop + i === 0;
+        newGameOver = curTop <= 0;
         pos = [curTop, curLeft];
         break;
       }

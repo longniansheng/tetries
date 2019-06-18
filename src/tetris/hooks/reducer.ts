@@ -1,16 +1,10 @@
 import {
-  DEFAULT_SCORE,
-  DEFAULT_GAME_DATA,
-  DEFAULT_CUR_LEFT,
-  DEFAULT_CUR_TOP
-} from "../utils/contants";
-import {
   handleKeyUp,
   handleKeyDown,
   handleKeyLeft,
   handleKeyRight,
   handleAutoDown,
-  getRandomSquares
+  handleReRender
 } from "../utils/game";
 
 export interface IState {
@@ -31,15 +25,7 @@ export interface IAction {
 function reducer(state: IState, action: IAction) {
   switch (action.type) {
     case "RERENDER-GAME":
-      return {
-        gameData: DEFAULT_GAME_DATA,
-        next: getRandomSquares(),
-        score: DEFAULT_SCORE,
-        current: getRandomSquares(),
-        curLeft: DEFAULT_CUR_LEFT,
-        curTop: DEFAULT_CUR_TOP,
-        gameOver: false
-      };
+      return handleReRender(state, action);
     case "HANDLE_KEYUP":
       return handleKeyUp(state, action);
     case "HANDLE_KEYLEFT":
