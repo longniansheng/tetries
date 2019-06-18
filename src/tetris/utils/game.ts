@@ -1,7 +1,5 @@
 import { IState, IAction } from "../hooks/reducer";
 import {
-  // DEFAULT_SCORE,
-  // DEFAULT_GAME_DATA,
   DEFAULT_CUR_LEFT,
   DEFAULT_CUR_TOP,
   squares
@@ -42,7 +40,7 @@ export function handleKeyLeft(state: IState, action: IAction) {
     for (let j = 0; j < cur[0].length; j++) {
       if (
         cur[i][j] &&
-        (curLeft + j === 0 || gameData[curTop + i][curLeft + j - 1])
+        (curLeft + j === 0 || curTop + i > 0 && gameData[curTop + i][curLeft + j - 1])
       ) {
         canMoveLeft = false;
         break;
@@ -71,7 +69,7 @@ export function handleKeyRight(state: IState, action: IAction) {
       if (
         cur[i][j] &&
         (curLeft + j + 1 === gameData[0].length ||
-          gameData[curTop + i][curLeft + j + 1])
+          curTop + i > 0 && gameData[curTop + i][curLeft + j + 1])
       ) {
         canMoveRight = false;
         break;
@@ -106,10 +104,10 @@ export function handleAutoDown(state: IState, action: IAction) {
       if (
         cur[i][j] &&
         ((i + 1) * 20 + curTop * 20 >= 400 ||
-          gameData[curTop + i + 1][curLeft + j])
+          curTop + i + 1 >= 0 && gameData[curTop + i + 1][curLeft + j])
       ) {
         isEnd = true;
-        newGameOver = curTop === 0;
+        newGameOver = curTop + i === 0;
         pos = [curTop, curLeft];
         break;
       }
@@ -158,7 +156,7 @@ export function genGameData(
   const result = [...gameData];
   for (let i = 0; i < current.length; i++) {
     for (let j = 0; j < current[0].length; j++) {
-      if (current[i][j]) {
+      if (current[i][j] && pos[0] + i >= 0 && pos[1] + j >= 0) {
         result[pos[0] + i][pos[1] + j] = 1;
       }
     }
