@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import {
   DEFAULT_SCORE,
   DEFAULT_GAME_DATA,
@@ -7,6 +7,7 @@ import {
 } from "../utils/contants";
 import { getRandomSquares } from "../utils/game";
 import reducer, { IAction } from "./reducer";
+import useInterval from "../hooks/useInterval";
 
 function useCanvasHooks(): [
   {
@@ -16,7 +17,7 @@ function useCanvasHooks(): [
     current: [number, number];
     curTop: number;
     curLeft: number;
-    gameOver: boolean
+    gameOver: boolean;
   },
   React.Dispatch<IAction>
 ] {
@@ -59,6 +60,18 @@ function useCanvasHooks(): [
       false
     );
   }, []);
+
+  const gameOverRef = useRef(state.gameOver);
+
+  useEffect(() => {
+    gameOverRef.current = state.gameOver;
+  }, [state.gameOver]);
+
+  useInterval(() => {
+    if (!gameOverRef.current) {
+      dispatch({ type: "AUTO_DOWN" });
+    }
+  }, 1000);
 
   return [state, dispatch];
 }
