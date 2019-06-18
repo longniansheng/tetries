@@ -220,7 +220,12 @@ function canRoate(
       break;
     }
     for (let j = 0; j < newCurrent[0].length; j++) {
-      if (newCurrent[i][j] && gameData[curTop + i][curLeft + j]) {
+      if (
+        newCurrent[i][j] &&
+        curTop + i > 0 &&
+        curLeft + j > 0 &&
+        gameData[curTop + i][curLeft + j]
+      ) {
         flag = false;
         break;
       }
