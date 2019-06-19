@@ -6,7 +6,7 @@ import {
   DEFAULT_CUR_TOP,
   squares
 } from "./contants";
-import copyArray from './copyArray';
+import copyArray from "./copyArray";
 
 export function handleReRender(state: IState, action: IAction) {
   return {
@@ -94,7 +94,15 @@ export function handleKeyRight(state: IState, action: IAction) {
 }
 
 export function handleKeyDown(state: IState, action: IAction) {
-  const { current, gameData: $gameData, curTop, curLeft, next, score, gameOver } = state;
+  const {
+    current,
+    gameData: $gameData,
+    curTop,
+    curLeft,
+    next,
+    score,
+    gameOver
+  } = state;
   const gameData = copyArray($gameData);
 
   // 如果已经gameOver不再进行其他的操作
@@ -119,7 +127,7 @@ export function handleKeyDown(state: IState, action: IAction) {
           (curTop + i + 1 >= 0 && gameData[curTop + i + 1][curLeft + j]))
       ) {
         isEnd = true;
-        newGameOver = curTop <= 0;
+        newGameOver = curTop + i <= 0;
         pos = [curTop, curLeft];
         break;
       }
