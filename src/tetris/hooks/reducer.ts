@@ -3,7 +3,6 @@ import {
   handleKeyDown,
   handleKeyLeft,
   handleKeyRight,
-  handleAutoDown,
   handleReRender
 } from "../utils/game";
 
@@ -22,7 +21,7 @@ export interface IAction {
   payload?: any;
 }
 
-function reducer(state: IState, action: IAction) {
+const reducer = (state: IState, action: IAction) => {
   switch (action.type) {
     case "RERENDER-GAME":
       return handleReRender(state, action);
@@ -33,9 +32,8 @@ function reducer(state: IState, action: IAction) {
     case "HANDLE_KEYRIGHT":
       return handleKeyRight(state, action);
     case "HANDLE_KEYDOWN":
-      return handleKeyDown(state, action);
     case "AUTO_DOWN":
-      return handleAutoDown(state, action);
+      return handleKeyDown(state, action);
     default:
       return { ...state };
   }

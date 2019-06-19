@@ -1,20 +1,16 @@
 import { IState, IAction } from "../hooks/reducer";
 import {
-  // DEFAULT_GAME_DATA,
+  DEFAULT_GAME_DATA,
   DEFAULT_SCORE,
   DEFAULT_CUR_LEFT,
   DEFAULT_CUR_TOP,
   squares
 } from "./contants";
+import copyArray from './copyArray';
 
 export function handleReRender(state: IState, action: IAction) {
-  // 直接使用DEFAULT_GAME_DATA会出现gameData无法更新的bug
-  const gameData = Array.from({ length: 20 }).map(() => {
-    const arr = Array.from({ length: 10 }).map(() => 0);
-    return [...arr];
-  });
   return {
-    gameData,
+    gameData: copyArray(DEFAULT_GAME_DATA),
     next: getRandomSquares(),
     score: DEFAULT_SCORE,
     current: getRandomSquares(),
@@ -37,10 +33,6 @@ export function handleKeyUp(state: IState, action: IAction) {
     ...state,
     current: canroate ? newCurrent : current
   };
-}
-
-export function handleKeyDown(state: IState, action: IAction) {
-  return handleAutoDown(state, action);
 }
 
 export function handleKeyLeft(state: IState, action: IAction) {
@@ -101,8 +93,9 @@ export function handleKeyRight(state: IState, action: IAction) {
   };
 }
 
-export function handleAutoDown(state: IState, action: IAction) {
-  const { current, gameData, curTop, curLeft, next, score, gameOver } = state;
+export function handleKeyDown(state: IState, action: IAction) {
+  const { current, gameData: $gameData, curTop, curLeft, next, score, gameOver } = state;
+  const gameData = copyArray($gameData);
 
   // 如果已经gameOver不再进行其他的操作
   if (gameOver) {
