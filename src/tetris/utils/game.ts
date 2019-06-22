@@ -1,45 +1,42 @@
-import { IState, IAction } from "../hooks/reducer";
+import { IState, IAction } from '../hooks/reducer';
 import {
   DEFAULT_GAME_DATA,
   DEFAULT_SCORE,
   DEFAULT_CUR_LEFT,
   DEFAULT_CUR_TOP,
   squares
-} from "./contants";
-import copyArray from './copyArray';
+} from './contants';
 
-export function handleReRender(state: IState, action: IAction) {
-  return {
-    gameData: copyArray(DEFAULT_GAME_DATA),
-    next: getRandomSquares(),
-    score: DEFAULT_SCORE,
-    current: getRandomSquares(),
-    curLeft: DEFAULT_CUR_LEFT,
-    curTop: DEFAULT_CUR_TOP,
-    gameOver: false
-  };
+export function handleReRender(draft: IState, action: IAction) {
+  draft.gameData = DEFAULT_GAME_DATA;
+  draft.next = getRandomSquares();
+  draft.score = DEFAULT_SCORE;
+  draft.current = getRandomSquares();
+  draft.curLeft = DEFAULT_CUR_LEFT;
+  draft.curTop = DEFAULT_CUR_TOP;
+  draft.gameOver = false;
+  return draft;
 }
-export function handleKeyUp(state: IState, action: IAction) {
-  const { gameData, current, curLeft, curTop, gameOver } = state;
+export function handleKeyUp(draft: IState, action: IAction) {
+  const { gameData, current, curLeft, curTop, gameOver } = draft;
   if (gameOver) {
-    return { ...state };
+    return draft;
   }
   const [sIdx, cIdx] = current;
   const sData = squares[sIdx];
   const newCIdx = (cIdx + 1) % sData.length;
   const newCurrent = [sIdx, newCIdx] as [number, number];
   const canroate = canRoate(curLeft, curTop, gameData, newCurrent);
-  return {
-    ...state,
-    current: canroate ? newCurrent : current
-  };
+
+  draft.current = canroate ? newCurrent : current;
+  return draft;
 }
 
-export function handleKeyLeft(state: IState, action: IAction) {
-  const { gameData, current, curLeft, curTop, gameOver } = state;
+export function handleKeyLeft(draft: IState, action: IAction) {
+  const { gameData, current, curLeft, curTop, gameOver } = draft;
   // 如果已经gameOver不再进行其他的操作
   if (gameOver) {
-    return { ...state };
+    return draft;
   }
   const cur = squares[current[0]][current[1]];
   let canMoveLeft = true;
@@ -58,17 +55,15 @@ export function handleKeyLeft(state: IState, action: IAction) {
       }
     }
   }
-  return {
-    ...state,
-    curLeft: canMoveLeft ? curLeft - 1 : curLeft
-  };
+  draft.curLeft = canMoveLeft ? curLeft - 1 : curLeft;
+  return draft;
 }
 
-export function handleKeyRight(state: IState, action: IAction) {
-  const { gameData, current, curLeft, curTop, gameOver } = state;
+export function handleKeyRight(draft: IState, action: IAction) {
+  const { gameData, current, curLeft, curTop, gameOver } = draft;
   // 如果已经gameOver不再进行其他的操作
   if (gameOver) {
-    return { ...state };
+    return draft;
   }
   const cur = squares[current[0]][current[1]];
   let canMoveRight = true;
@@ -87,19 +82,16 @@ export function handleKeyRight(state: IState, action: IAction) {
       }
     }
   }
-  return {
-    ...state,
-    curLeft: canMoveRight ? curLeft + 1 : curLeft
-  };
+  draft.curLeft = canMoveRight ? curLeft + 1 : curLeft;
+  return;
 }
 
-export function handleKeyDown(state: IState, action: IAction) {
-  const { current, gameData: $gameData, curTop, curLeft, next, score, gameOver } = state;
-  const gameData = copyArray($gameData);
+export function handleKeyDown(draft: IState, action: IAction) {
+  const { current, gameData, curTop, curLeft, next, score, gameOver } = draft;
 
   // 如果已经gameOver不再进行其他的操作
   if (gameOver) {
-    return { ...state };
+    return draft;
   }
 
   let isEnd = false;
@@ -134,16 +126,14 @@ export function handleKeyDown(state: IState, action: IAction) {
     score
   );
 
-  return {
-    ...state,
-    current: newGameOver ? current : isEnd ? next : current,
-    next: newGameOver ? next : isEnd ? getRandomSquares() : next,
-    curTop: isEnd ? DEFAULT_CUR_TOP : curTop + 1,
-    curLeft: isEnd ? DEFAULT_CUR_LEFT : curLeft,
-    gameData: newGameData,
-    score: newScore,
-    gameOver: newGameOver
-  };
+  draft.current = newGameOver ? current : isEnd ? next : current;
+  draft.next = newGameOver ? next : isEnd ? getRandomSquares() : next;
+  draft.curTop = isEnd ? DEFAULT_CUR_TOP : curTop + 1;
+  draft.curLeft = isEnd ? DEFAULT_CUR_LEFT : curLeft;
+  draft.gameData = newGameData;
+  draft.score = newScore;
+  draft.gameOver = newGameOver;
+  return draft;
 }
 
 export function getRandomSquares(): [number, number] {

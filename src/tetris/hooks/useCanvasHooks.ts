@@ -1,13 +1,13 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useState } from 'react';
 import {
   DEFAULT_SCORE,
   DEFAULT_GAME_DATA,
   DEFAULT_CUR_LEFT,
   DEFAULT_CUR_TOP
-} from "../utils/contants";
-import { getRandomSquares } from "../utils/game";
-import reducer, { IAction } from "./reducer";
-import useInterval from "../hooks/useInterval";
+} from '../utils/contants';
+import { getRandomSquares } from '../utils/game';
+import reducer, { IAction } from './reducer';
+import useInterval from '../hooks/useInterval';
 
 function useCanvasHooks(): [
   {
@@ -36,42 +36,50 @@ function useCanvasHooks(): [
       const keycode = e.keyCode;
       switch (keycode) {
         case 37:
-          dispatch({ type: "HANDLE_KEYLEFT" });
+          dispatch({ type: 'HANDLE_KEYLEFT' });
           break;
         case 38:
-          dispatch({ type: "HANDLE_KEYUP" });
+          dispatch({ type: 'HANDLE_KEYUP' });
           break;
         case 39:
-          dispatch({ type: "HANDLE_KEYRIGHT" });
+          dispatch({ type: 'HANDLE_KEYRIGHT' });
           break;
         case 32:
         case 40:
-          dispatch({ type: "HANDLE_KEYDOWN" });
+          dispatch({ type: 'HANDLE_KEYDOWN' });
           break;
 
         default:
           break;
       }
     };
-    document.addEventListener("keydown", e => handleKeypress(e), false);
+    document.addEventListener('keydown', e => handleKeypress(e), false);
     return document.removeEventListener(
-      "keydown",
+      'keydown',
       e => handleKeypress(e),
       false
     );
   }, []);
 
-  const gameOverRef = useRef(state.gameOver);
+  const [delay, setDelay] = useState(1000);
 
   useEffect(() => {
-    gameOverRef.current = state.gameOver;
-  }, [state.gameOver]);
+    if (state.gameOver) {
+      setDelay(0);
+    } else if (state.score >= 2000) {
+      setDelay(200);
+    } else if (state.score >= 1500) {
+      setDelay(400);
+    } else if (state.score >= 1000) {
+      setDelay(600);
+    } else if (state.score >= 500) {
+      setDelay(800);
+    }
+  }, [state.gameOver, state.score]);
 
   useInterval(() => {
-    if (!gameOverRef.current) {
-      dispatch({ type: "AUTO_DOWN" });
-    }
-  }, 1000);
+    dispatch({ type: 'AUTO_DOWN' });
+  }, delay);
 
   return [state, dispatch];
 }
