@@ -111,7 +111,7 @@ export function handleKeyDown(draft: IState, action: IAction) {
           (curTop + i + 1 >= 0 && gameData[curTop + i + 1][curLeft + j]))
       ) {
         isEnd = true;
-        newGameOver = curTop <= 0;
+        newGameOver = curTop + i <= 0;
         pos = [curTop, curLeft];
         break;
       }

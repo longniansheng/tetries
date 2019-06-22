@@ -13,7 +13,7 @@ const DEFAULT_GAME_DATA = Array.from({ length: 20 }).map(() => {
 });
 
 const DEFAULT_CUR_LEFT = 4;
-const DEFAULT_CUR_TOP = -3;
+const DEFAULT_CUR_TOP = -4;
 
 const squares = [square1, square2, square3, square4, square5, square6, square7];
 
