@@ -74,6 +74,8 @@ function useCanvasHooks(): [
       setDelay(600);
     } else if (state.score >= 500) {
       setDelay(800);
+    } else {
+      setDelay(1000);
     }
   }, [state.gameOver, state.score]);
 
